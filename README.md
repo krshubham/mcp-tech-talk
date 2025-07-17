@@ -2,16 +2,16 @@
 
 A stunning Apple/Jony Ive-inspired presentation on Model Context Protocol with live MCP client and server demonstrations.
 
-## 🎯 What's Included
+## What's Included
 
-### 📊 Presentation (`index.html`)
+### Presentation (`index.html`)
 - Beautiful reveal.js presentation with Apple-inspired design
 - Explains function calling in LLMs and how MCP advances it
 - Accessible terminology for non-LLM experts
 - Dynamic backgrounds and smooth animations
 - USB-C analogy to explain MCP's role
 
-### 🛠️ MCP Demo Components
+### MCP Demo Components
 
 1. **MCP Client** (`mcp-client.js`)
    - Connects to both stdio and HTTP MCP servers
@@ -29,7 +29,7 @@ A stunning Apple/Jony Ive-inspired presentation on Model Context Protocol with l
    - Resources: calculation history, mathematical constants
    - Server-Sent Events for real-time notifications
 
-## 🚀 Quick Start
+## Quick Start
 
 ### Prerequisites
 - Node.js 18+ 
@@ -70,7 +70,7 @@ npm start
 npm run dev
 ```
 
-## 🎨 Presentation Features
+## Presentation Features
 
 ### Apple/Jony Ive Design Elements
 - **Minimalist Typography**: SF Pro Display font family
@@ -91,7 +91,7 @@ npm run dev
 9. **Live Demo**: Real MCP servers in action
 10. **Future Vision**: Connected AI ecosystem
 
-## 🔧 Demo Details
+## Demo Details
 
 ### stdio Server Capabilities
 - **File Operations**: Create, read, list, and delete files
@@ -110,7 +110,7 @@ npm run dev
 - **Resource Access**: Reads resources from connected servers
 - **Error Handling**: Graceful handling of connection and execution errors
 
-## 🎯 Key Messages
+## Key Messages
 
 1. **Function Calling Evolution**: From text-only AI to action-capable AI
 2. **Standardization Need**: Eliminate vendor lock-in and integration complexity
@@ -118,21 +118,21 @@ npm run dev
 4. **Real-world Impact**: Minutes to integrate vs weeks of custom development
 5. **Future Vision**: Connected ecosystem where any AI can use any tool
 
-## 🛡️ Security Considerations
+## Security Considerations
 
 - **Controlled Access**: MCP servers control what tools and resources are exposed
 - **Transport Security**: HTTPS for HTTP transport, process isolation for stdio
 - **Input Validation**: All tool parameters are validated before execution
 - **Error Boundaries**: Graceful error handling prevents system crashes
 
-## 📱 Browser Compatibility
+## Browser Compatibility
 
 The presentation works best in modern browsers:
 - Chrome/Edge 90+
 - Firefox 88+
 - Safari 14+
 
-## 🎤 Presentation Tips
+## Presentation Tips
 
 1. **Start with the Problem**: Explain current AI integration challenges
 2. **Use the USB-C Analogy**: Most people understand universal connectors
@@ -140,7 +140,7 @@ The presentation works best in modern browsers:
 4. **Emphasize Benefits**: Focus on time savings and flexibility
 5. **End with Vision**: Paint the picture of a connected AI future
 
-## 🔍 Troubleshooting
+## Troubleshooting
 
 ### Common Issues
 
@@ -159,7 +159,7 @@ The presentation works best in modern browsers:
 - Look for error messages in stderr
 - Ensure file permissions are correct
 
-## 📚 Learn More
+## Learn More
 
 - [Model Context Protocol Specification](https://modelcontextprotocol.io/specification/2025-06-18)
 - [MCP Documentation](https://modelcontextprotocol.io)
@@ -167,4 +167,4 @@ The presentation works best in modern browsers:
 
 ---
 
-*Created with ❤️ for the AI community*
+*Created for the AI community*
