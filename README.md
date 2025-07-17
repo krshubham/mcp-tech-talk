@@ -69,28 +69,6 @@ npm start
 # Runs both HTTP server and presentation
 npm run dev
 ```
-
-## Presentation Features
-
-### Apple/Jony Ive Design Elements
-- **Minimalist Typography**: SF Pro Display font family
-- **Elegant Color Palette**: Gradients inspired by Apple's design language
-- **Smooth Animations**: Floating elements and slide transitions
-- **Glass Morphism**: Backdrop blur effects and translucent cards
-- **Progressive Disclosure**: Fragment animations reveal content step by step
-
-### Content Structure
-1. **Introduction**: What is MCP?
-2. **Function Calling Basics**: From talking to acting
-3. **The Problem**: Fragmented AI integrations
-4. **USB-C Analogy**: Universal connectivity concept
-5. **MCP Architecture**: Clients, protocol, servers
-6. **Core Concepts**: Tools, resources, prompts
-7. **Transport Methods**: stdio vs HTTP
-8. **Benefits**: Interoperability, reusability, security
-9. **Live Demo**: Real MCP servers in action
-10. **Future Vision**: Connected AI ecosystem
-
 ## Demo Details
 
 ### stdio Server Capabilities
