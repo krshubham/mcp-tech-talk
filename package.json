@@ -1,0 +1,37 @@
+{
+  "name": "mcp-presentation-demo",
+  "version": "1.0.0",
+  "description": "Model Context Protocol presentation with live demo",
+  "type": "module",
+  "main": "mcp-client.js",
+  "scripts": {
+    "start": "node mcp-client.js",
+    "http-server": "node mcp-http-server.js",
+    "stdio-server": "node mcp-stdio-server.js",
+    "demo": "concurrently \"npm run http-server\" \"sleep 2 && npm start\"",
+    "presentation": "python3 -m http.server 8000",
+    "dev": "concurrently \"npm run http-server\" \"npm run presentation\""
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "ai",
+    "llm",
+    "presentation",
+    "demo"
+  ],
+  "author": "MCP Demo",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "node-fetch": "^3.3.2",
+    "eventsource": "^2.0.2"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

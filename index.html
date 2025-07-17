@@ -1,0 +1,1032 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+    <title>Model Context Protocol</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/reveal.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/theme/simple.min.css" id="theme">
+    <style>
+        :root {
+            --primary-color: #667eea;
+            --secondary-color: #764ba2;
+            --accent-color: #f093fb;
+            --success-color: #4facfe;
+            --warning-color: #43e97b;
+            --danger-color: #fa709a;
+            --dark-bg: #1a1a2e;
+            --light-bg: #16213e;
+        }
+
+        .reveal {
+            background: linear-gradient(135deg, var(--dark-bg) 0%, var(--light-bg) 100%);
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .reveal::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg,
+            rgba(102, 126, 234, 0.1) 0%,
+            rgba(240, 147, 251, 0.1) 25%,
+            rgba(79, 172, 254, 0.1) 50%,
+            rgba(118, 75, 162, 0.1) 75%,
+            rgba(102, 126, 234, 0.1) 100%);
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
+            z-index: -2;
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .floating-shapes {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .shape {
+            position: absolute;
+            opacity: 0.1;
+            animation: float 20s infinite linear;
+        }
+
+        .shape:nth-child(1) {
+            top: 20%;
+            left: 10%;
+            width: 60px;
+            height: 60px;
+            background: var(--primary-color);
+            border-radius: 50%;
+            animation-delay: 0s;
+        }
+
+        .shape:nth-child(2) {
+            top: 60%;
+            right: 15%;
+            width: 40px;
+            height: 40px;
+            background: var(--accent-color);
+            transform: rotate(45deg);
+            animation-delay: -5s;
+        }
+
+        .shape:nth-child(3) {
+            top: 30%;
+            right: 25%;
+            width: 0;
+            height: 0;
+            border-left: 25px solid transparent;
+            border-right: 25px solid transparent;
+            border-bottom: 43px solid var(--success-color);
+            animation-delay: -10s;
+        }
+
+        .shape:nth-child(4) {
+            top: 70%;
+            left: 20%;
+            width: 50px;
+            height: 50px;
+            background: var(--secondary-color);
+            border-radius: 10px;
+            animation-delay: -15s;
+        }
+
+        .shape:nth-child(5) {
+            top: 10%;
+            right: 40%;
+            width: 35px;
+            height: 35px;
+            background: var(--warning-color);
+            border-radius: 50%;
+            animation-delay: -7s;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(0px) rotate(0deg);
+                opacity: 0.1;
+            }
+            25% {
+                transform: translateY(-20px) rotate(90deg);
+                opacity: 0.2;
+            }
+            50% {
+                transform: translateY(-10px) rotate(180deg);
+                opacity: 0.15;
+            }
+            75% {
+                transform: translateY(-30px) rotate(270deg);
+                opacity: 0.25;
+            }
+            100% {
+                transform: translateY(0px) rotate(360deg);
+                opacity: 0.1;
+            }
+        }
+
+        .reveal .slides {
+            text-align: left;
+        }
+
+        .reveal h1, .reveal h2, .reveal h3 {
+            text-align: center;
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: bold;
+        }
+
+        .reveal h1 {
+            font-size: 3em;
+            text-shadow: 0 0 20px rgba(102, 126, 234, 0.5);
+        }
+
+        .reveal .slides section>*, .reveal .slides section section>* {
+            margin-left: 20px;
+            margin-right: 20px;
+        }
+
+        .reveal pre {
+            font-size: 0.55em;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            border: 1px solid var(--primary-color);
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.2);
+        }
+
+        .reveal pre code {
+            background: transparent;
+            color: #e6e6e6;
+        }
+
+        .reveal blockquote {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            border-radius: 10px;
+            padding: 20px;
+            border: none;
+            color: white;
+            font-style: italic;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .reveal ul li {
+            margin-bottom: 10px;
+        }
+
+        .reveal .fragment.highlight-red {
+            color: var(--danger-color);
+        }
+
+        .reveal .fragment.highlight-green {
+            color: var(--success-color);
+        }
+
+        .reveal .fragment.highlight-blue {
+            color: var(--primary-color);
+        }
+
+        .code-container {
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+            flex-wrap: wrap;
+            max-width: 100%;
+            overflow-x: auto;
+        }
+
+        .code-block {
+            flex: 1;
+            min-width: 300px;
+            max-width: 50%;
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 8px;
+            padding: 15px;
+            border: 1px solid var(--primary-color);
+            box-sizing: border-box;
+        }
+
+        .code-block pre {
+            margin: 0;
+            overflow-x: auto;
+            font-size: 16px;
+            line-height: 1.4;
+        }
+
+        .code-block code {
+            white-space: pre;
+            word-wrap: break-word;
+        }
+
+        /* Responsive design for smaller screens */
+        @media (max-width: 768px) {
+            .code-container {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .code-block {
+                max-width: 100%;
+                min-width: auto;
+            }
+        }
+
+        .code-title {
+            color: var(--accent-color);
+            font-weight: bold;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .architecture-diagram {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            margin: 30px 0;
+        }
+
+        .component-box {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            color: white;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+            min-width: 120px;
+        }
+
+        .arrow {
+            color: var(--accent-color);
+            font-size: 2em;
+        }
+
+        .card-container {
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+        }
+
+        .card-container .benefit-card {
+            flex: 1 1 0;
+            width: 50%;
+            max-width: 50%;
+            min-width: 0;
+        }
+
+        .benefit-card {
+            background: rgba(102, 126, 234, 0.15);
+            border: 1px solid rgba(102, 126, 234, 0.3);
+            padding: 15px;
+            border-radius: 12px;
+            margin: 10px 0;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            overflow: hidden;
+        }
+
+        .benefit-card strong {
+            color: var(--accent-color);
+            font-size: 0.8em;
+            display: block;
+            margin-bottom: 10px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .benefit-card ul {
+            margin: 0;
+            padding-left: 0;
+            list-style: none;
+        }
+
+        .benefit-card li {
+            padding: 4px 0;
+            font-size: 0.75em;
+            line-height: 1.3;
+            word-wrap: break-word;
+        }
+
+        .protocol-step {
+            background: rgba(102, 126, 234, 0.1);
+            border-left: 4px solid var(--primary-color);
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+
+        .title-slide {
+            background: radial-gradient(circle at center, rgba(102, 126, 234, 0.3), var(--dark-bg));
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+        .navigate-up .controls-arrow,
+        .navigate-down .controls-arrow,
+        .navigate-right .controls-arrow,
+        .navigate-left .controls-arrow {
+            font-size: 10px;
+            color: var(--accent-color);
+        }
+
+        .syntax-highlight .hljs-string { color: var(--success-color); }
+        .syntax-highlight .hljs-number { color: var(--warning-color); }
+        .syntax-highlight .hljs-keyword { color: var(--primary-color); }
+        .syntax-highlight .hljs-attr { color: var(--accent-color); }
+    </style>
+</head>
+<body>
+    <div class="reveal">
+        <div class="floating-shapes">
+            <div class="shape"></div>
+            <div class="shape"></div>
+            <div class="shape"></div>
+            <div class="shape"></div>
+            <div class="shape"></div>
+        </div>
+        <div class="slides">
+            <section class="title-slide">
+                <h1 style="text-transform: uppercase;">Model Context Protocol</h1>
+                <p style="text-align:center; font-size: 1.5em; color: var(--accent-color);">The Standard for AI Application Context</p>
+            </section>
+            <section>
+                <h2>The Rise of Function Calling</h2>
+                <p class="fragment">LLMs are no longer just text generators.</p>
+                <p class="fragment">They can now interact with external systems, APIs, and data sources.</p>
+                <p class="fragment">This is achieved through "Function Calling" or "Tool Use".</p>
+                <p class="fragment"><strong>Example:</strong> An IDE like Cursor/Windsurf calling a file system tool to read a file.</p>
+            </section>
+            <section>
+                <section>
+                    <h2>The Problem with Today's Approach</h2>
+                    <ul>
+                        <li class="fragment highlight-red">Each LLM provider has a proprietary, unique API for function calling.</li>
+                        <li class="fragment highlight-red">Switching models requires a complete rewrite of the tool-use logic.</li>
+                        <li class="fragment highlight-red">This creates vendor lock-in and slows down innovation.</li>
+                        <li class="fragment">It's like having a different charger for every phone brand.</li>
+                    </ul>
+                </section>
+                <section>
+                    <h3>Different Formats, Same Purpose</h3>
+                    <div class="code-container">
+                        <div class="code-block">
+                            <div class="code-title">OpenAI Format</div>
+                            <pre><code class="language-json">
+{
+    "functions": [{
+        "name": "get_weather",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "location": {"type": "string"}
+            }
+        }
+    }]
+}
+</code></pre>
+                        </div>
+                        <div class="code-block">
+                            <div class="code-title">Anthropic Format</div>
+                            <pre><code class="language-json">
+{
+    "tools": [{
+        "name": "get_weather",
+        "description": "Get weather data",
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "location": {"type": "string"}
+            }
+        }
+    }]
+}
+</code></pre>
+                        </div>
+                    </div>
+                </section>
+            </section>
+            <section>
+                <h2>Introducing Model Context Protocol</h2>
+                <p>An open protocol that enables seamless integration between LLM applications and external data sources and tools.</p>
+            </section>
+            <section>
+                <section>
+                    <h3>MCP Protocol Architecture</h3>
+                    <p>MCP uses JSON-RPC 2.0 for standardized communication between clients and servers:</p>
+                    <pre><code class="language-json" data-line-numbers>
+{
+    "jsonrpc": "2.0",
+    "id": "request-123",
+    "method": "tools/call",
+    "params": {
+        "name": "get_weather",
+        "arguments": {
+            "location": "San Francisco"
+        }
+    }
+}
+</code></pre>
+                </section>
+            </section>
+            <section>
+                <div>
+                    <p><strong>Key Features:</strong></p>
+                    <ul>
+                        <li>Standardized JSON-RPC 2.0 protocol</li>
+                        <li>Bidirectional communication</li>
+                        <li>Progress notifications for long-running operations</li>
+                        <li>Resource subscriptions and updates</li>
+                    </ul>
+                </div>
+            </section>
+
+            <section>
+                <section>
+                    <h2>MCP Connection Lifecycle</h2>
+                    <p>Understanding the complete flow from connection to operation</p>
+                </section>
+                <section>
+                    <h3>1. Initialization Phase</h3>
+                    <div class="code-container">
+                        <div class="code-block" style="max-width: 100%">
+                            <div class="code-title">Client → Server: Initialize Request</div>
+                            <pre><code class="language-json">
+{
+    "jsonrpc": "2.0",
+    "id": 1,
+    "method": "initialize",
+    "params": {
+        "protocolVersion": "2025-06-18",
+        "capabilities": {
+            "roots": { "listChanged": true },
+            "sampling": {}
+        },
+        "clientInfo": {
+            "name": "my-client",
+            "version": "1.0.0"
+        }
+    }
+}
+</code></pre>
+                        </div>
+                    </div>
+                </section>
+                <section>
+                    <h3>2. Server Response</h3>
+                    <div class="code-container">
+                        <div class="code-block" style="max-width: 100%">
+                            <div class="code-title">Server → Client: Initialize Response</div>
+                            <pre><code class="language-json">
+{
+    "jsonrpc": "2.0",
+    "id": 1,
+    "result": {
+        "protocolVersion": "2025-06-18",
+        "capabilities": {
+            "tools": { "listChanged": true },
+            "resources": { "subscribe": true },
+            "logging": {}
+        },
+        "serverInfo": {
+            "name": "file-server",
+            "version": "1.0.0"
+        },
+        "instructions": "File operations server"
+    }
+}
+</code></pre>
+                        </div>
+                    </div>
+                </section>
+                <section>
+                    <h3>3. Initialized Notification</h3>
+                    <div class="code-container">
+                        <div class="code-block" style="max-width: 100%">
+                            <div class="code-title">Client → Server: Ready Signal</div>
+                            <pre><code class="language-json">
+{
+    "jsonrpc": "2.0",
+    "method": "notifications/initialized"
+}
+</code></pre>
+                        </div>
+                    </div>
+                    <p class="fragment"><strong>Now the connection is ready for operations!</strong></p>
+                </section>
+            </section>
+
+            <section>
+                <section>
+                    <h2>MCP Operation Phases</h2>
+                    <p>After initialization, MCP supports various operation types</p>
+                </section>
+                <section>
+                    <h3>Tool Discovery & Execution</h3>
+                    <div class="code-container">
+                        <div class="code-block">
+                            <div class="code-title">1. List Available Tools</div>
+                            <pre><code class="language-json">
+{
+    "jsonrpc": "2.0",
+    "id": 2,
+    "method": "tools/list"
+}
+</code></pre>
+                        </div>
+                        <div class="code-block">
+                            <div class="code-title">2. Execute Tool</div>
+                            <pre><code class="language-json">
+{
+    "jsonrpc": "2.0",
+    "id": 3,
+    "method": "tools/call",
+    "params": {
+        "name": "read_file",
+        "arguments": {
+            "path": "/path/to/file.txt"
+        }
+    }
+}
+</code></pre>
+                        </div>
+                    </div>
+                </section>
+                <section>
+                    <h3>Resource Management</h3>
+                    <div class="code-container">
+                        <div class="code-block">
+                            <div class="code-title">Subscribe to Resource Updates</div>
+                            <pre><code class="language-json">
+{
+    "jsonrpc": "2.0",
+    "id": 4,
+    "method": "resources/subscribe",
+    "params": {
+        "uri": "file:///project/config.json"
+    }
+}
+</code></pre>
+                        </div>
+                        <div class="code-block">
+                            <div class="code-title">Resource Update Notification</div>
+                            <pre><code class="language-json">
+{
+    "jsonrpc": "2.0",
+    "method": "notifications/resources/updated",
+    "params": {
+        "uri": "file:///project/config.json"
+    }
+}
+</code></pre>
+                        </div>
+                    </div>
+                </section>
+                <section>
+                    <h3>Progress Tracking</h3>
+                    <p>For long-running operations, MCP supports progress notifications:</p>
+                    <pre><code class="language-json">
+{
+    "jsonrpc": "2.0",
+    "method": "notifications/progress",
+    "params": {
+        "progressToken": "upload-123",
+        "progress": 75,
+        "total": 100,
+        "message": "Uploading file... 75% complete"
+    }
+}
+</code></pre>
+                </section>
+            </section>
+
+            <section>
+                <section>
+                    <h2>MCP Transport Layers</h2>
+                    <p>MCP supports multiple transport mechanisms for different use cases</p>
+                </section>
+                <section>
+                    <h3>STDIO Transport</h3>
+                    <p>Direct process communication via standard input/output streams</p>
+                    <pre><code class="language-python">
+# Server configuration for STDIO
+{
+    "command": "python",
+    "args": ["my_mcp_server.py"],
+    "transport": "stdio"
+}
+</code></pre>
+                    <div class="fragment">
+                        <p><strong>Use Cases:</strong></p>
+                        <ul>
+                            <li>Local file operations</li>
+                            <li>Command-line tools</li>
+                            <li>Single-process integrations</li>
+                        </ul>
+                    </div>
+                </section>
+                <section>
+                    <h3>HTTP Transport</h3>
+                    <p>Web-based communication for scalable, multi-client scenarios</p>
+                    <pre><code class="language-python">
+# Server configuration for HTTP
+{
+    "url": "http://localhost:8000/mcp",
+    "transport": "http",
+    "headers": {
+        "Authorization": "Bearer token123"
+    }
+}
+</code></pre>
+                    <div class="fragment">
+                        <p><strong>Use Cases:</strong></p>
+                        <ul style="font-size: 22px;">
+                            <li>Web services integration</li>
+                            <li>Multi-client scenarios</li>
+                            <li>Distributed systems</li>
+                        </ul>
+                    </div>
+                </section>
+            </section>
+
+            <section>
+                <section>
+                    <h2>MCP Server Capabilities</h2>
+                    <p>Servers declare their capabilities during initialization</p>
+                </section>
+                <section>
+                    <h3>Core Capabilities</h3>
+                    <div class="code-container">
+                        <div class="code-block" style="max-width: 100%">
+                            <div class="code-title">Server Capabilities Declaration</div>
+                            <pre><code class="language-json">
+{
+    "capabilities": {
+        "tools": {
+            "listChanged": true
+        },
+        "resources": {
+            "subscribe": true,
+            "listChanged": true
+        },
+        "prompts": {
+            "listChanged": true
+        },
+        "logging": {},
+        "completions": {},
+        "experimental": {
+            "customFeature": {}
+        }
+    }
+}
+</code></pre>
+                        </div>
+                    </div>
+                </section>
+                <section>
+                    <h3>Tool Annotations & Hints</h3>
+                    <p>MCP 2025-06-18 introduces rich tool metadata for better LLM understanding:</p>
+                    <pre><code class="language-json">
+{
+    "name": "delete_file",
+    "description": "Delete a file from the filesystem",
+    "annotations": {
+        "title": "File Deletion Tool",
+        "readOnlyHint": false,
+        "destructiveHint": true,
+        "idempotentHint": true,
+        "openWorldHint": false
+    },
+    "inputSchema": {
+        "type": "object",
+        "properties": {
+            "path": {
+                "type": "string",
+                "description": "Path to file to delete"
+            }
+        },
+        "required": ["path"]
+    }
+}
+</code></pre>
+                </section>
+            </section>
+
+            <section>
+                <section>
+                    <h2>Connection Shutdown & Error Handling</h2>
+                    <p>MCP includes robust mechanisms for graceful shutdown and error recovery</p>
+                </section>
+                <section>
+                    <h3>Graceful Shutdown</h3>
+                    <p>Proper connection termination follows a defined sequence:</p>
+                    <pre><code class="language-json">
+// 1. Cancel any in-flight requests
+{
+    "jsonrpc": "2.0",
+    "method": "notifications/cancelled",
+    "params": {
+        "requestId": "long-running-123",
+        "reason": "Client shutting down"
+    }
+}
+
+// 2. Unsubscribe from resources
+{
+    "jsonrpc": "2.0",
+    "id": 99,
+    "method": "resources/unsubscribe",
+    "params": {
+        "uri": "file:///project/config.json"
+    }
+}
+
+// 3. Close transport connection
+</code></pre>
+                </section>
+                <section>
+                    <h3>Error Handling</h3>
+                    <p>MCP uses standard JSON-RPC error codes plus custom error types:</p>
+                    <pre><code class="language-json">
+{
+    "jsonrpc": "2.0",
+    "id": "failed-request",
+    "error": {
+        "code": -32601,
+        "message": "Method not found",
+        "data": {
+            "method": "unknown/method",
+            "availableMethods": ["tools/list", "tools/call"]
+        }
+    }
+}
+</code></pre>
+                </section>
+                <section>
+                        <p><strong>Standard Error Codes:</strong></p>
+                        <ul>
+                            <li>-32700: Parse error</li>
+                            <li>-32600: Invalid request</li>
+                            <li>-32601: Method not found</li>
+                            <li>-32602: Invalid params</li>
+                            <li>-32603: Internal error</li>
+                        </ul>
+                </section>
+                <section>
+                    <h3>1. Discovery Phase</h3>
+                    <p>Client connects to MCP Server and requests available tools</p>
+                    <pre><code class="language-python">
+# Initialize client and discover capabilities
+server_capabilities = await client.initialize()
+
+# List all available tools
+available_tools = await client.list_tools()
+print(f"Available tools: {[t['name'] for t in available_tools]}")
+</code></pre>
+                </section>
+                <section>
+                    <h3>2. LLM Integration</h3>
+                    <p>Client sends tools to LLM along with user prompt</p>
+                    <pre><code class="language-python">
+# Send user message and tools to LLM
+llm_response = await llm.complete(
+prompt=user_message,
+tools=available_tools,
+tool_choice="auto"  # Let LLM decide if/when to use tools
+)
+
+# Check if LLM wants to use any tools
+if hasattr(llm_response, 'tool_calls'):
+# Handle tool calls
+...
+</code></pre>
+                </section>
+                <section>
+                    <h3>3. Tool Execution</h3>
+                    <p>Client executes requested tools via MCP</p>
+                    <pre><code class="language-python">
+tool_results = []
+for tool_call in llm_response.tool_calls:
+try:
+# Execute each tool call
+result = await client.call_tool(
+tool_call.name, 
+tool_call.arguments
+)
+tool_results.append({
+    'tool_call_id': tool_call.id,
+    'result': result
+})
+except Exception as e:
+print(f"Error calling {tool_call.name}: {str(e)}")
+
+# Send results back to LLM for final response
+final_response = await llm.complete(
+prompt=user_message,
+tool_results=tool_results
+)
+</code></pre>
+                </section>
+            </section>
+
+            <section>
+                <section>
+                    <h2>Implementation with FastMCP</h2>
+                    <p>Building MCP servers is simplified with the FastMCP framework:</p>
+                </section>
+                <section>
+                    <h3>STDIO Server Example</h3>
+                    <pre><code class="language-python">
+from fastmcp import FastMCP
+
+# Create MCP server
+mcp = FastMCP("File Operations Server")
+
+@mcp.tool()
+def read_file(path: str) -> str:
+"""Read contents of a file"""
+with open(path, 'r') as f:
+return f.read()
+
+@mcp.tool()
+def write_file(path: str, content: str) -> str:
+"""Write content to a file"""
+with open(path, 'w') as f:
+f.write(content)
+return f"File {path} written successfully"
+
+# Run as STDIO server
+if __name__ == "__main__":
+mcp.run()
+</code></pre>
+                </section>
+                <section>
+                    <h3>HTTP Server Example</h3>
+                    <pre><code class="language-python">
+from fastmcp import FastMCP
+import psutil
+
+# Create HTTP MCP server
+mcp = FastMCP("System Monitor Server")
+
+@mcp.tool()
+def get_system_info() -> dict:
+"""Get system information"""
+return {
+    "cpu_percent": psutil.cpu_percent(),
+    "memory_percent": psutil.virtual_memory().percent,
+    "disk_usage": psutil.disk_usage('/').percent
+}
+
+@mcp.resource("system://stats")
+def system_stats():
+"""Live system statistics"""
+return get_system_info()
+
+# Run as HTTP server on port 8000
+if __name__ == "__main__":
+mcp.run_server(port=8000)
+</code></pre>
+                </section>
+            </section>
+
+            <section>
+                <section>
+                    <h2>Key Benefits of MCP</h2>
+                    <p>The "USB-C for AI applications" - standardized, flexible, and powerful</p>
+                </section>
+                <section>
+                    <h3>🔌 Standardization</h3>
+                    <div class="card-container">
+                        <div class="benefit-card">
+                            <strong>One Protocol, Many LLMs</strong>
+                            <p>Write tools once, use with any MCP-compatible client</p>
+                        </div>
+                        <div class="benefit-card">
+                            <strong>Consistent Interface</strong>
+                            <p>JSON-RPC 2.0 provides reliable, well-tested communication standard</p>
+                        </div>
+                    </div>
+                </section>
+                <section>
+                    <h3>🚀 Developer Experience</h3>
+                    <div class="card-container">
+                        <div class="benefit-card">
+                            <strong>Pre-built Integrations</strong>
+                            <p>Rich ecosystem of servers for databases, APIs, file systems, and more</p>
+                        </div>
+                        <div class="benefit-card">
+                            <strong>Simple Implementation</strong>
+                            <p>FastMCP framework makes server creation straightforward (python)</p>
+                        </div>
+                    </div>
+                </section>
+                <section>
+                    <h3>🔒 Security & Control</h3>
+                    <div class="card-container">
+                        <div class="benefit-card">
+                            <strong>Data Sovereignty</strong>
+                            <p>Keep sensitive data within your infrastructure</p>
+                        </div>
+                        <div class="benefit-card">
+                            <strong>Granular Permissions</strong>
+                            <p>Control exactly what tools and resources LLMs can access</p>
+                        </div>
+                    </div>
+                </section>
+                <section>
+                    <h3>Flexibility</h3>
+                    <p>Easily swap LLM providers without changing your tools</p>
+                    <pre><code class="language-python">
+# Switch between LLM providers with minimal code changes
+async def get_llm_response(prompt, tools, provider="openai"):
+if provider == "openai":
+return await openai_client.complete(prompt, tools=tools)
+elif provider == "anthropic":
+return await anthropic_client.complete(prompt, tools=tools)
+# Add more providers as needed
+</code></pre>
+                </section>
+                <section>
+                    <h3>Security</h3>
+                    <p>Keep your tools and data secure within your own infrastructure</p>
+                    <pre><code class="language-python">
+# Run sensitive tools on your own servers
+{
+    "command": "python",
+    "args": ["secure_tool.py"],
+    "transport": "stdio",
+    "environment": {
+        "DB_PASSWORD": "${SECURE_DB_PASSWORD}",
+        "API_KEYS": "${SECURE_API_KEYS}"
+    }
+}
+</code></pre>
+                </section>
+                <section>
+                    <h3>Extensibility</h3>
+                    <p>Build complex, multi-tool agents and workflows</p>
+                    <pre><code class="language-python">
+# Chain multiple tools together
+async def process_user_request(user_query):
+# 1. First tool: Analyze intent
+intent = await analyze_intent(user_query)
+
+# 2. Second tool: Gather data
+data = await gather_relevant_data(intent)
+
+# 3. Third tool: Process with LLM
+response = await llm.complete(
+prompt=user_query,
+context=data,
+tools=[tool1, tool2, tool3]
+)
+
+# 4. Format and return response
+return format_response(response)
+</code></pre>
+                </section>
+            </section>
+
+            <section class="background: white">
+                <h1>Thank You</h1>
+                <div style="text-align:center; margin-top: 50px;">
+                    <p style="color: var(--primary-color);"><a style="color: var(--accent-color)" href="https://modelcontextprotocol.io/specification/2025-06-18">Specification (2025-06-18)</a></p>
+                    <p style="color: var(--accent-color);"><a style="color: var(--accent-color)" href="https://github.com/modelcontextprotocol/modelcontextprotocol/blob/main/schema/2025-06-18/schema.ts">MCP Schema</a></p>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/reveal.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/plugin/notes/notes.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/plugin/markdown/markdown.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/plugin/highlight/highlight.min.js"></script>
+    <script>
+        Reveal.initialize({
+            hash: true,
+            transition: 'slide',
+            plugins: [ RevealMarkdown, RevealHighlight, RevealNotes ]
+        });
+    </script>
+</body>
+</html>
